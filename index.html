@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Comparison of Command Centre, Organization, Operator, Driver, and Commuter dashboard capabilities.">
+  <title>LULA Dashboard Capability Matrix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <style>
+    :root {
+      --ink: #151815;
+      --paper: #f4f1e8;
+      --surface: #fffdf7;
+      --line: #c9c5b9;
+      --muted: #686b64;
+      --signal: #ffd338;
+      --yes: #176b4d;
+      --yes-bg: #dcefe5;
+      --limited: #8a5200;
+      --limited-bg: #fff0c7;
+      --no: #9c2d31;
+      --no-bg: #f7dfe0;
+      --focus: #1659c7;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { color-scheme: light; }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(rgba(21, 24, 21, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(21, 24, 21, 0.045) 1px, transparent 1px),
+        var(--paper);
+      background-size: 24px 24px;
+      color: var(--ink);
+      font-family: "IBM Plex Sans", sans-serif;
+    }
+
+    button, input, select { font: inherit; }
+
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    .masthead {
+      border-bottom: 3px solid var(--ink);
+      background: var(--signal);
+    }
+
+    .masthead__inner,
+    main {
+      width: min(1600px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    .masthead__inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 32px;
+      padding: 34px 0 28px;
+    }
+
+    .eyebrow,
+    .meta,
+    .result-count,
+    .access-key,
+    th {
+      font-family: "IBM Plex Mono", monospace;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-family: "Archivo Black", sans-serif;
+      font-size: clamp(2rem, 5vw, 4.9rem);
+      font-weight: 400;
+      line-height: 0.95;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .meta {
+      margin: 0;
+      padding: 10px 12px;
+      border: 2px solid var(--ink);
+      background: var(--surface);
+      font-size: 0.75rem;
+      line-height: 1.6;
+      text-transform: uppercase;
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+
+    main { padding: 26px 0 52px; }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(240px, 1.6fr) minmax(160px, 0.65fr) minmax(280px, 1fr) auto;
+      gap: 12px;
+      align-items: end;
+      padding-bottom: 20px;
+    }
+
+    .field { display: grid; gap: 6px; }
+
+    .field label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .field input,
+    .field select,
+    .reset-button {
+      min-height: 44px;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    .field input,
+    .field select { padding: 9px 12px; }
+
+    .reset-button {
+      padding: 9px 16px;
+      cursor: pointer;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .reset-button:hover { background: var(--signal); }
+
+    .access-filter {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .access-filter legend {
+      padding: 0;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .access-options {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      min-height: 44px;
+      overflow: hidden;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .access-option {
+      position: relative;
+      display: grid;
+      min-width: 0;
+      place-items: center;
+      border-right: 1px solid var(--ink);
+      cursor: pointer;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .access-option:last-child { border-right: 0; }
+
+    .access-option input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .access-option span {
+      display: grid;
+      width: 100%;
+      height: 100%;
+      place-items: center;
+      padding: 8px 5px;
+    }
+
+    .access-option input:checked + span {
+      background: var(--ink);
+      color: var(--signal);
+    }
+
+    .access-option input:focus-visible + span {
+      outline: 3px solid var(--focus);
+      outline-offset: -4px;
+    }
+
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .result-count {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .legends {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .access-key {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      font-size: 0.75rem;
+      text-transform: none;
+    }
+
+    .key-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.65rem;
+      border-right: 1px solid var(--line);
+      font-weight: 600;
+    }
+
+    .key-item:last-child { border-right: 0; }
+
+    .key-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+    }
+
+    .key-dot--yes { background: var(--yes-bg); color: var(--yes); }
+    .key-dot--limited { background: var(--limited-bg); color: var(--limited); }
+    .key-dot--no { background: var(--no-bg); color: var(--no); }
+
+    .access-key {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+    }
+
+    .table-frame {
+      overflow: auto;
+      max-height: min(72vh, 820px);
+      border: 2px solid var(--ink);
+      background: var(--surface);
+      box-shadow: 7px 7px 0 var(--ink);
+    }
+
+    table {
+      width: 100%;
+      min-width: 1120px;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th:last-child, td:last-child { border-right: 0; }
+    tbody tr:last-child td { border-bottom: 0; }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      padding: 0;
+      background: var(--ink);
+      color: white;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    th:first-child {
+      left: 0;
+      z-index: 4;
+      width: 210px;
+    }
+
+    th button {
+      display: flex;
+      width: 100%;
+      min-height: 56px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      text-align: left;
+      text-transform: inherit;
+    }
+
+    th button:hover { background: #30342f; }
+
+    .sort-indicator {
+      min-width: 1.1em;
+      color: var(--signal);
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    td {
+      padding: 12px;
+      font-size: 0.82rem;
+      line-height: 1.42;
+    }
+
+    td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: var(--surface);
+      font-weight: 600;
+    }
+
+    tbody tr:hover td { box-shadow: inset 0 2px 0 var(--signal), inset 0 -2px 0 var(--signal); }
+
+    td[data-level="yes"] { background-color: var(--yes-bg) !important; color: var(--ink) !important; }
+    td[data-level="limited"] { background-color: var(--limited-bg) !important; color: var(--ink) !important; }
+    td[data-level="no"] { background-color: var(--no-bg) !important; color: var(--ink) !important; }
+
+    mark {
+      border-radius: 2px;
+      background: var(--signal);
+      color: inherit;
+    }
+
+    .empty-state {
+      display: none;
+      padding: 40px 20px;
+      border: 2px dashed var(--ink);
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 6px;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 1.25rem;
+      font-weight: 400;
+    }
+
+    .notes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 3px solid var(--ink);
+    }
+
+    .notes h2 {
+      margin: 0 0 8px;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 1.05rem;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .notes p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 900px) {
+      .masthead__inner { grid-template-columns: 1fr; }
+      .meta { justify-self: start; }
+      .controls { grid-template-columns: 1fr 1fr; }
+      .controls .field:first-child { grid-column: 1 / -1; }
+      .access-filter { grid-column: 1 / -1; }
+      .notes { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .masthead__inner, main { width: min(100% - 20px, 1600px); }
+      .masthead__inner { padding-block: 24px 20px; }
+      .controls { grid-template-columns: 1fr; }
+      .controls .field:first-child { grid-column: auto; }
+      .reset-button { width: 100%; }
+      .table-frame { max-height: 68vh; box-shadow: 4px 4px 0 var(--ink); }
+    }
+
+    @media print {
+      body { background: white; }
+      .masthead { background: white; }
+      .controls, .access-key, .empty-state { display: none !important; }
+      .masthead__inner { padding: 10px 0; }
+      h1 { font-size: 28pt; }
+      .table-frame { overflow: visible; max-height: none; box-shadow: none; }
+      table { min-width: 0; font-size: 7pt; }
+      th, th:first-child, td:first-child { position: static; }
+      td { padding: 5px; }
+      .notes { break-before: page; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .masthead__inner > *, .controls, .table-frame {
+        animation: arrive 420ms both;
+      }
+      .masthead__inner > :nth-child(2) { animation-delay: 70ms; }
+      .controls { animation-delay: 120ms; }
+      .table-frame { animation-delay: 180ms; }
+      @keyframes arrive {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+
+    /* Bootstrap-aligned Organization Dashboard treatment. */
+    :root {
+      --ink: #212529;
+      --paper: #f8fafc;
+      --surface: #ffffff;
+      --line: #dee2e6;
+      --muted: #6c757d;
+      --signal: #ef4523;
+      --yes: #198754;
+      --yes-bg: #dff3e8;
+      --limited: #997404;
+      --limited-bg: #fff1bf;
+      --no: #b02a37;
+      --no-bg: #f8dfe1;
+      --focus: #0d6efd;
+      --radius: 0.375rem;
+    }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Nunito", sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .masthead {
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .masthead__inner,
+    main {
+      width: 100%;
+      max-width: 1600px;
+      margin-inline: auto;
+    }
+
+    .masthead__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 1.5rem;
+    }
+
+    .brand-lockup {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-logo {
+      width: 72px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .eyebrow,
+    .meta,
+    .result-count,
+    .access-key,
+    th {
+      font-family: "Nunito", sans-serif;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Nunito", sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .meta {
+      margin: 0;
+      padding: 0.35rem 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: 50rem;
+      background: #f8f9fa;
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.4;
+      text-align: center;
+      text-transform: none;
+      box-shadow: none;
+    }
+
+    main { padding: 1.5rem; }
+
+    .controls {
+      display: flex;
+      margin-inline: 0;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .field { display: block; }
+
+    .field label,
+    .access-filter legend {
+      margin-bottom: 0.35rem;
+      font-family: "Nunito", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: none;
+    }
+
+    .field input,
+    .field select,
+    .reset-button {
+      min-height: 38px;
+      border-width: 1px;
+      border-color: #ced4da;
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    .field input,
+    .field select { padding: 0.375rem 0.75rem; }
+
+    .reset-button {
+      padding: 0.375rem 0.85rem;
+      font-family: "Nunito", sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: none;
+    }
+
+    .reset-button:hover {
+      border-color: #6c757d;
+      background: #6c757d;
+      color: white;
+    }
+
+    .access-filter { display: block; }
+
+    .access-options {
+      min-height: 38px;
+      border: 1px solid #ced4da;
+      border-radius: var(--radius);
+    }
+
+    .access-option {
+      border-right-color: #ced4da;
+      color: #495057;
+      font-family: "Nunito", sans-serif;
+      font-size: 0.75rem;
+    }
+
+    .access-option input:checked + span {
+      background: #0d6efd;
+      color: white;
+    }
+
+    .status-bar { margin-bottom: 0.75rem; }
+
+    .result-count,
+    .access-key {
+      font-size: 0.75rem;
+      text-transform: none;
+    }
+
+    .key-dot { border-radius: 50%; }
+
+    .table-frame {
+      max-height: min(72vh, 820px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    table { min-width: 1260px; }
+
+    th {
+      background: #f8f9fa;
+      background-color: #f8f9fa !important;
+      color: #495057;
+      font-size: 0.72rem;
+      text-transform: none;
+      box-shadow: inset 0 -1px 0 var(--line);
+    }
+
+    th button {
+      min-height: 50px;
+      padding: 0.75rem;
+      font-weight: 700;
+    }
+
+    th button:hover { background: #e9ecef; }
+
+    .sort-indicator { color: #0d6efd; }
+
+    td {
+      padding: 0.75rem;
+      font-size: 0.82rem;
+      line-height: 1.4;
+    }
+
+    td:first-child { background: var(--surface); }
+    tbody tr:hover td { box-shadow: inset 0 0 0 9999px rgba(13, 110, 253, 0.04); }
+
+    .empty-state {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .empty-state strong,
+    .notes h2 {
+      font-family: "Nunito", sans-serif;
+      font-weight: 700;
+    }
+
+    .notes {
+      display: flex;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .notes h2 { font-size: 0.95rem; }
+
+    @media (max-width: 767.98px) {
+      .masthead__inner { padding-inline: 1rem; }
+      .brand-logo { width: 58px; }
+      .meta { display: none; }
+      main { padding: 1rem; }
+      .controls { display: flex; }
+      .access-filter { grid-column: auto; }
+      .table-frame { max-height: 68vh; box-shadow: none; }
+      .notes { display: flex; }
+    }
+  </style>
+</head>
+<body>
+  <header class="masthead shadow-sm">
+    <nav class="masthead__inner" aria-label="Primary navigation">
+      <div class="brand-lockup">
+        <img class="brand-logo" src="images/logo.png" alt="LULA">
+        <div>
+          <p class="eyebrow">Organization Dashboard</p>
+          <h1>Dashboard Capability Matrix</h1>
+        </div>
+      </div>
+      <p class="meta">6 portals · 43 capabilities · Reviewed 25 Sep 2026</p>
+    </nav>
+  </header>
+
+  <main class="container-fluid">
+    <section class="controls row g-3 align-items-end mb-4" aria-label="Table controls">
+      <div class="field col-12 col-xl-4">
+        <label class="form-label" for="search">Search capabilities</label>
+        <input class="form-control" id="search" type="search" placeholder="Try invoices, trips, users…" autocomplete="off">
+      </div>
+      <div class="field col-12 col-sm-6 col-xl-3">
+        <label class="form-label" for="portal-filter">Portal</label>
+        <select class="form-select" id="portal-filter">
+          <option value="all">All portals</option>
+          <option value="command-centre">Command Centre</option>
+          <option value="organization">Organization</option>
+          <option value="operator">Operator</option>
+          <option value="driver">Driver</option>
+          <option value="commuter">Commuter</option>
+          <option value="mobile">Mobile App</option>
+        </select>
+      </div>
+      <fieldset class="access-filter col-12 col-lg-6 col-xl-4">
+        <legend>Access</legend>
+        <div class="access-options">
+          <label class="access-option"><input type="radio" name="access" value="all" checked><span>All</span></label>
+          <label class="access-option"><input type="radio" name="access" value="yes"><span>Can</span></label>
+          <label class="access-option"><input type="radio" name="access" value="limited"><span>Limited</span></label>
+          <label class="access-option"><input type="radio" name="access" value="no"><span>Cannot</span></label>
+        </div>
+      </fieldset>
+      <div class="col-12 col-lg-4 col-xl-1 d-grid">
+        <button class="reset-button btn btn-outline-secondary" id="reset" type="button">Reset</button>
+      </div>
+    </section>
+
+    <div class="status-bar d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <p class="result-count" id="result-count" aria-live="polite">Showing 43 capabilities</p>
+      <div class="legends">
+        <div class="access-key" aria-label="Access level color legend">
+          <span class="key-item"><span class="key-dot key-dot--yes"></span>Can access</span>
+          <span class="key-item"><span class="key-dot key-dot--limited"></span>Limited / scoped</span>
+          <span class="key-item"><span class="key-dot key-dot--no"></span>Cannot access</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-frame table-responsive" id="table-frame">
+      <table class="table table-hover align-middle mb-0" id="capability-table">
+        <thead>
+          <tr>
+            <th scope="col"><button type="button" data-column="0">Capability <span class="sort-indicator">↕</span></button></th>
+            <th scope="col" data-portal="command-centre"><button type="button" data-column="1">Command Centre <span class="sort-indicator">↕</span></button></th>
+            <th scope="col" data-portal="organization"><button type="button" data-column="2">Organization <span class="sort-indicator">↕</span></button></th>
+            <th scope="col" data-portal="operator"><button type="button" data-column="3">Operator <span class="sort-indicator">↕</span></button></th>
+            <th scope="col" data-portal="driver"><button type="button" data-column="4">Driver <span class="sort-indicator">↕</span></button></th>
+            <th scope="col" data-portal="commuter"><button type="button" data-column="5">Commuter <span class="sort-indicator">↕</span></button></th>
+            <th scope="col" data-portal="mobile"><button type="button" data-column="6">Mobile App <span class="sort-indicator">↕</span></button></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Platform-wide administration</td><td data-level="yes">Full, role-dependent</td><td data-level="no">No</td><td data-level="no">No</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Manage own account</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td></tr>
+          <tr><td>Delete own account</td><td data-level="limited">Available through admin resource</td><td data-level="yes">Available</td><td data-level="yes">Available</td><td data-level="yes">Available</td><td data-level="yes">Available</td></tr>
+          <tr><td>Manage other users</td><td data-level="yes">Platform users</td><td data-level="limited">Organization users</td><td data-level="limited">Operator users</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Invite users</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="no">No explicit invite route</td><td data-level="no">No</td><td data-level="yes">Can send invites</td></tr>
+          <tr><td>Import users</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="no">No</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>View user audit logs</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Assign user roles</td><td data-level="limited">Internal role permission required</td><td data-level="limited">Organization roles</td><td data-level="no">No explicit role route</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Manage Command Centre accounts</td><td data-level="yes">Yes</td><td data-level="no">No</td><td data-level="no">No</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Manage organizations</td><td data-level="yes">Platform-wide</td><td data-level="limited">Own and managed organizations</td><td data-level="limited">Linked organizations</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Manage operators</td><td data-level="yes">Platform-wide</td><td data-level="limited">Select and assign to loops</td><td data-level="limited">Own operator account</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Manage drivers</td><td data-level="yes">Platform-wide</td><td data-level="no">No direct management</td><td data-level="limited">Own operator's drivers</td><td data-level="limited">Own profile only</td><td data-level="no">No</td></tr>
+          <tr><td>Import or export drivers</td><td data-level="yes">Export</td><td data-level="no">No</td><td data-level="yes">Import and export</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Track driver locations</td><td data-level="yes">Yes</td><td data-level="limited">Through trip tracking</td><td data-level="limited">Own drivers</td><td data-level="limited">Publishes own location</td><td data-level="no">No</td></tr>
+          <tr><td>Manage commuters</td><td data-level="yes">Platform-wide</td><td data-level="limited">Organization commuters</td><td data-level="limited">Loop commuters</td><td data-level="limited">Assigned trip passengers</td><td data-level="limited">Own profile only</td></tr>
+          <tr><td>Import commuters or bookings</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="no">No bulk commuter import</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Manage vehicles</td><td data-level="yes">Platform-wide</td><td data-level="no">No</td><td data-level="limited">Own fleet</td><td data-level="limited">Create or update own vehicle</td><td data-level="no">No</td></tr>
+          <tr><td>Import vehicles</td><td data-level="no">No explicit import route</td><td data-level="no">No</td><td data-level="yes">Yes</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Manage loops</td><td data-level="yes">Platform-wide</td><td data-level="limited">Organization loops</td><td data-level="limited">Operational loops</td><td data-level="no">No</td><td data-level="limited">View only</td></tr>
+          <tr><td>Manage loop schedules</td><td data-level="yes">Create, edit, delete</td><td data-level="yes">Create, edit, delete</td><td data-level="limited">View and generate trips</td><td data-level="no">No</td><td data-level="limited">View only</td></tr>
+          <tr><td>Manage loop capacity</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Assign operators to loops</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="no">No</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Assign drivers to loops</td><td data-level="yes">Yes</td><td data-level="no">No direct route</td><td data-level="yes">Yes</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Manage loop bookings</td><td data-level="yes">Yes</td><td data-level="limited">Organization bookings</td><td data-level="limited">Operational bookings</td><td data-level="no">No</td><td data-level="limited">Own bookings</td></tr>
+          <tr><td>Create trips</td><td data-level="yes">Yes</td><td data-level="limited">Organization trips</td><td data-level="limited">Operator trips</td><td data-level="no">Cannot create normal trips</td><td data-level="no">Cannot create normal trips</td></tr>
+          <tr><td>Edit or delete trips</td><td data-level="yes">Yes</td><td data-level="limited">Delete organization trips</td><td data-level="limited">Operator trips</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Assign drivers to trips</td><td data-level="yes">Yes</td><td data-level="no">No</td><td data-level="yes">Yes</td><td data-level="limited">Accept offered trip</td><td data-level="no">No</td></tr>
+          <tr><td>View active trips</td><td data-level="yes">Platform-wide</td><td data-level="limited">Organization trips</td><td data-level="limited">Operator trips</td><td data-level="limited">Assigned trips</td><td data-level="limited">Own trips</td></tr>
+          <tr><td>Start and complete trips</td><td data-level="limited">Administrative controls</td><td data-level="no">No explicit controls</td><td data-level="limited">Stop-level controls</td><td data-level="yes">Yes</td><td data-level="no">No</td></tr>
+          <tr><td>Onboard or offload passengers</td><td data-level="yes">Yes</td><td data-level="no">No explicit stop controls</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td><td data-level="no">No</td></tr>
+          <tr><td>Rate trips</td><td data-level="limited">View reviews</td><td data-level="limited">View reviews</td><td data-level="limited">View reviews</td><td data-level="no">No</td><td data-level="yes">Yes</td></tr>
+          <tr><td>Create charter bookings</td><td data-level="yes">Manage all</td><td data-level="yes">Yes</td><td data-level="no">No dedicated route</td><td data-level="limited">Execute assigned charter</td><td data-level="yes">Yes</td></tr>
+          <tr><td>Book day hire</td><td data-level="limited">Manage and edit requests</td><td data-level="yes">Yes</td><td data-level="no">No</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+          <tr><td>Use shuttle routes</td><td data-level="no">No dedicated route management</td><td data-level="yes">Create and manage routes</td><td data-level="no">No</td><td data-level="limited">Execute shuttle stops</td><td data-level="limited">Browse and book</td></tr>
+          <tr><td>Use on-demand transport</td><td data-level="limited">Broader trip visibility</td><td data-level="no">No</td><td data-level="yes">Manage requests, routes and stats</td><td data-level="yes">Fulfil requests</td><td data-level="yes">Request and manage own ride</td></tr>
+          <tr><td>Manage delivery jobs</td><td data-level="yes">Platform-wide</td><td data-level="no">No</td><td data-level="no">No</td><td data-level="limited">Execute assigned deliveries</td><td data-level="no">No</td></tr>
+          <tr><td>Invoices and payments</td><td data-level="yes">Broad, role-dependent</td><td data-level="limited">View invoices</td><td data-level="no">No dedicated routes</td><td data-level="limited">View earnings</td><td data-level="limited">View and pay own invoices</td></tr>
+          <tr><td>Manage pricing</td><td data-level="yes">Broad, role-dependent</td><td data-level="limited">Billing settings and quotes</td><td data-level="yes">Operator and loop pricing</td><td data-level="no">No</td><td data-level="limited">Request charter quote</td></tr>
+          <tr><td>Reports and statistics</td><td data-level="yes">Platform-wide</td><td data-level="limited">Organization reports</td><td data-level="limited">Operator reports</td><td data-level="limited">Personal stats and earnings</td><td data-level="limited">Personal trip statistics</td></tr>
+          <tr><td>Notification centre</td><td data-level="limited">Database notifications</td><td data-level="no">No dedicated route</td><td data-level="no">No dedicated route</td><td data-level="yes">Personal notifications</td><td data-level="yes">Personal notifications</td></tr>
+          <tr><td>Upload media</td><td data-level="limited">Through managed resources</td><td data-level="yes">Yes</td><td data-level="no">No explicit media route</td><td data-level="yes">Yes</td><td data-level="yes">Yes</td></tr>
+          <tr><td>Manage cancellation policies</td><td data-level="yes">Yes</td><td data-level="no">No</td><td data-level="yes">Driver and commuter policies</td><td data-level="limited">Submit own cancellations</td><td data-level="limited">Submit own cancellations</td></tr>
+          <tr><td>Manage support, website or blog content</td><td data-level="yes">Yes</td><td data-level="no">No</td><td data-level="no">No</td><td data-level="no">No</td><td data-level="no">No</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state" id="empty-state">
+      <strong>No matching capabilities</strong>
+      <span>Adjust the search or filters to widen the comparison.</span>
+    </div>
+
+    <section class="notes row g-3" aria-label="Review notes">
+      <div class="col-12 col-lg-6">
+        <h2>How to read this</h2>
+        <p>“Limited / scoped” means the action is restricted to the current account, assigned work, linked entities, or a subset of operations. “Cannot” means no corresponding protected v2 route was found. The Mobile App combines commuter, driver, and delivery account experiences; available actions depend on the signed-in account.</p>
+      </div>
+      <div class="col-12 col-lg-6">
+        <h2>Authorization caveat</h2>
+        <p>Command Centre capabilities vary by internal role. Several Command Centre controllers do not consistently enforce the permission matrix, so effective API access may be broader than the intended role definition.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYbY5gK/9x1KjGg5S8rHAZXzXnHL4P7xst5KcF" crossorigin="anonymous"></script>
+  <script>
+    (() => {
+      const table = document.getElementById('capability-table');
+      const tbody = table.tBodies[0];
+      const searchInput = document.getElementById('search');
+      const portalFilter = document.getElementById('portal-filter');
+      const accessInputs = Array.from(document.querySelectorAll('input[name="access"]'));
+      const resetButton = document.getElementById('reset');
+      const resultCount = document.getElementById('result-count');
+      const tableFrame = document.getElementById('table-frame');
+      const emptyState = document.getElementById('empty-state');
+      const mobileCapabilities = [
+        ['no', 'No'],
+        ['limited', 'Current commuter, driver, or delivery profile'],
+        ['limited', 'Can request account deletion'],
+        ['no', 'No'],
+        ['limited', 'Commuter invitations'],
+        ['no', 'No'],
+        ['no', 'No'],
+        ['no', 'No'],
+        ['no', 'No'],
+        ['limited', 'Linked organization summary only'],
+        ['no', 'No'],
+        ['limited', 'Driver profile only'],
+        ['no', 'No'],
+        ['limited', 'Driver publishes own location'],
+        ['limited', 'Commuter profile only'],
+        ['no', 'No'],
+        ['limited', 'Driver creates or updates own vehicle'],
+        ['no', 'No'],
+        ['limited', 'Commuter views available loops'],
+        ['limited', 'Mobile-specific commuter schedule view'],
+        ['no', 'No'],
+        ['no', 'No'],
+        ['no', 'No'],
+        ['limited', 'Commuter manages own bookings'],
+        ['limited', 'Can request an on-demand trip'],
+        ['limited', 'Update on-demand request or cancel assigned work'],
+        ['limited', 'Driver accepts offered trip'],
+        ['limited', 'Own active trips'],
+        ['limited', 'Driver starts and completes trips'],
+        ['limited', 'Driver onboards and offloads passengers'],
+        ['limited', 'Commuter rates completed trips'],
+        ['limited', 'Commuter books; driver executes'],
+        ['no', 'No'],
+        ['limited', 'Commuter books; driver executes stops'],
+        ['limited', 'Commuter requests; driver fulfils'],
+        ['limited', 'Driver or delivery account executes assigned jobs'],
+        ['limited', 'Commuter pays invoices; driver views earnings'],
+        ['limited', 'Commuter requests charter quote'],
+        ['limited', 'Personal trips, statistics, and earnings'],
+        ['yes', 'Personal push and in-app notifications'],
+        ['yes', 'Profile and vetting media'],
+        ['limited', 'Submit own trip cancellation'],
+        ['no', 'No']
+      ];
+      const sourceRows = Array.from(tbody.rows);
+      sourceRows.forEach((row, index) => {
+        const [level, description] = mobileCapabilities[index];
+        const cell = row.insertCell();
+        cell.dataset.level = level;
+        cell.textContent = description;
+      });
+      const originalRows = Array.from(tbody.rows);
+      const portalColumns = {
+        'command-centre': 1,
+        organization: 2,
+        operator: 3,
+        driver: 4,
+        commuter: 5,
+        mobile: 6
+      };
+      let sortColumn = 0;
+      let sortDirection = 1;
+
+      function plainText(cell) {
+        return cell.textContent.trim().toLocaleLowerCase();
+      }
+
+      function updateColumnVisibility() {
+        const selectedPortal = portalFilter.value;
+        const selectedColumn = portalColumns[selectedPortal];
+
+        Array.from(table.rows).forEach((row) => {
+          Array.from(row.cells).forEach((cell, index) => {
+            cell.hidden = Boolean(selectedColumn) && index !== 0 && index !== selectedColumn;
+          });
+        });
+      }
+
+      function updateRows() {
+        const query = searchInput.value.trim().toLocaleLowerCase();
+        const selectedPortal = portalFilter.value;
+        const selectedLevel = accessInputs.find((input) => input.checked).value;
+        const selectedColumn = portalColumns[selectedPortal];
+        let visibleCount = 0;
+
+        originalRows.forEach((row) => {
+          const searchableCells = selectedColumn
+            ? [row.cells[0], row.cells[selectedColumn]]
+            : Array.from(row.cells);
+          const matchesQuery = !query || searchableCells.some((cell) => plainText(cell).includes(query));
+          const levelCells = selectedColumn
+            ? [row.cells[selectedColumn]]
+            : Array.from(row.querySelectorAll('td[data-level]'));
+          const matchesLevel = selectedLevel === 'all' || levelCells.some((cell) => cell.dataset.level === selectedLevel);
+          const visible = matchesQuery && matchesLevel;
+          row.hidden = !visible;
+          if (visible) visibleCount += 1;
+        });
+
+        resultCount.textContent = `Showing ${visibleCount} of ${originalRows.length} capabilities`;
+        tableFrame.hidden = visibleCount === 0;
+        emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+
+      function applyFilters() {
+        updateColumnVisibility();
+        updateRows();
+      }
+
+      function sortRows(column) {
+        sortDirection = sortColumn === column ? sortDirection * -1 : 1;
+        sortColumn = column;
+
+        const sortedRows = [...originalRows].sort((left, right) => {
+          return plainText(left.cells[column]).localeCompare(plainText(right.cells[column]), undefined, {
+            numeric: true,
+            sensitivity: 'base'
+          }) * sortDirection;
+        });
+
+        sortedRows.forEach((row) => tbody.appendChild(row));
+        table.querySelectorAll('.sort-indicator').forEach((indicator) => { indicator.textContent = '↕'; });
+        const activeButton = table.querySelector(`button[data-column="${column}"]`);
+        activeButton.querySelector('.sort-indicator').textContent = sortDirection === 1 ? '↑' : '↓';
+        activeButton.setAttribute('aria-sort', sortDirection === 1 ? 'ascending' : 'descending');
+      }
+
+      table.querySelectorAll('th button').forEach((button) => {
+        button.addEventListener('click', () => sortRows(Number(button.dataset.column)));
+      });
+
+      searchInput.addEventListener('input', updateRows);
+      portalFilter.addEventListener('change', applyFilters);
+      accessInputs.forEach((input) => input.addEventListener('change', updateRows));
+      resetButton.addEventListener('click', () => {
+        searchInput.value = '';
+        portalFilter.value = 'all';
+        accessInputs.find((input) => input.value === 'all').checked = true;
+        sortColumn = 0;
+        sortDirection = -1;
+        sortRows(0);
+        applyFilters();
+        searchInput.focus();
+      });
+
+      sortRows(0);
+      applyFilters();
+    })();
+  </script>
+</body>
+</html>
