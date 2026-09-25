@@ -389,6 +389,66 @@
       font-weight: 400;
     }
 
+    .actual-behavior {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .actual-behavior__header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: end;
+      margin-bottom: 0.75rem;
+    }
+
+    .actual-behavior h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .actual-behavior p {
+      max-width: 62rem;
+      margin: 0.25rem 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .implementation-key {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      font-size: 0.75rem;
+    }
+
+    .implementation-status {
+      display: inline-block;
+      margin-bottom: 0.3rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 50rem;
+      font-size: 0.67rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .implementation-status--implemented { background: #dff3e8; color: #146c43; }
+    .implementation-status--partial { background: #fff1bf; color: #7a5b00; }
+    .implementation-status--not-observed { background: #e9ecef; color: #495057; }
+    .implementation-status--outside { background: #e7e3f5; color: #5a4b92; }
+
+    .implementation-table td { min-width: 170px; }
+    .implementation-table td:first-child { min-width: 200px; }
+
+    .endpoint-evidence {
+      display: block;
+      color: #495057;
+      font-size: 0.74rem;
+      line-height: 1.35;
+    }
+
     .notes {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -829,6 +889,138 @@
       <strong>No matching capabilities</strong>
       <span>Adjust the search or filters to widen the comparison.</span>
     </div>
+
+    <section class="actual-behavior" aria-labelledby="implemented-behavior-heading">
+      <div class="actual-behavior__header">
+        <div>
+          <h2 id="implemented-behavior-heading">Implemented Dashboard Behavior</h2>
+          <p>Evidence from API calls in the local Dashboards frontend. “Not observed” means no matching call was found in the reviewed frontend modules; it does not mean the API forbids the action.</p>
+        </div>
+        <div class="implementation-key" aria-label="Implementation status legend">
+          <span class="implementation-status implementation-status--implemented">Implemented</span>
+          <span class="implementation-status implementation-status--partial">Partial</span>
+          <span class="implementation-status implementation-status--not-observed">Not observed</span>
+          <span class="implementation-status implementation-status--outside">Outside repo</span>
+        </div>
+      </div>
+
+      <div class="table-frame table-responsive">
+        <table class="table table-hover align-middle mb-0 implementation-table">
+          <thead>
+            <tr>
+              <th scope="col">Implemented behavior</th>
+              <th scope="col">Command Centre</th>
+              <th scope="col">Organization</th>
+              <th scope="col">Operator</th>
+              <th scope="col">Driver</th>
+              <th scope="col">Commuter</th>
+              <th scope="col">Mobile App</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>User management</td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`dashboard/users` CRUD; userable unlink.</span></td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`/organization/users` CRUD.</span></td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`operator/users` module.</span></td>
+              <td><span class="implementation-status implementation-status--partial">Partial</span><span class="endpoint-evidence">Own account setup and vetting calls.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No commuter account service found.</span></td>
+              <td><span class="implementation-status implementation-status--outside">Outside repo</span><span class="endpoint-evidence">Mobile source is not in Dashboards.</span></td>
+            </tr>
+            <tr>
+              <td>User audit and account data</td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">Users store and account actions present.</span></td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`/organization/users/audit-logs` and coordinates.</span></td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`operator/users/audit-logs` module.</span></td>
+              <td><span class="implementation-status implementation-status--partial">Partial</span><span class="endpoint-evidence">Own driver account endpoints only.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No API-backed audit module found.</span></td>
+              <td><span class="implementation-status implementation-status--outside">Outside repo</span><span class="endpoint-evidence">Not reviewed here.</span></td>
+            </tr>
+            <tr>
+              <td>Trip management and assignment</td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`dashboard/trips`, driver assignment, stops, reviews, logs.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">Reviewed organization services focus on users.</span></td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`operator/trips` CRUD and driver assignment.</span></td>
+              <td><span class="implementation-status implementation-status--partial">Partial</span><span class="endpoint-evidence">Driver repositories reviewed focus on setup, not trip UI.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No commuter trip store found.</span></td>
+              <td><span class="implementation-status implementation-status--outside">Outside repo</span><span class="endpoint-evidence">Not reviewed here.</span></td>
+            </tr>
+            <tr>
+              <td>Trip logs, reviews, and safety detail</td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">Trip logs CRUD, reviews, and safety report calls.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed service calls.</span></td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">Trip logs and reviews calls.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed repository calls.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed store calls.</span></td>
+              <td><span class="implementation-status implementation-status--outside">Outside repo</span><span class="endpoint-evidence">Not reviewed here.</span></td>
+            </tr>
+            <tr>
+              <td>Loop lifecycle</td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`dashboard/loops` CRUD, schedules, commuters, operators.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No loop service found in reviewed organization modules.</span></td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`operator/loops` CRUD, capacity, riders, bookings.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No loop repository reviewed.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No API loop store found.</span></td>
+              <td><span class="implementation-status implementation-status--outside">Outside repo</span><span class="endpoint-evidence">Not reviewed here.</span></td>
+            </tr>
+            <tr>
+              <td>Loop schedules and bookings</td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">Schedule and `dashboard/loop-bookings` stores.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed schedule or booking calls.</span></td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">Schedules, generated trips, and loop booking calls.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed calls.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No API-backed booking store found.</span></td>
+              <td><span class="implementation-status implementation-status--outside">Outside repo</span><span class="endpoint-evidence">Not reviewed here.</span></td>
+            </tr>
+            <tr>
+              <td>Vehicle management</td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`v2/dashboard/vehicles` CRUD.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed vehicle service.</span></td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`operator/vehicles` CRUD and import module.</span></td>
+              <td><span class="implementation-status implementation-status--partial">Partial</span><span class="endpoint-evidence">Own vehicle and `/dashboard/vehicles` calls.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed vehicle calls.</span></td>
+              <td><span class="implementation-status implementation-status--outside">Outside repo</span><span class="endpoint-evidence">Not reviewed here.</span></td>
+            </tr>
+            <tr>
+              <td>Organizations and operator links</td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">Organization and operator store modules; exports and links.</span></td>
+              <td><span class="implementation-status implementation-status--partial">Partial</span><span class="endpoint-evidence">Organization user services reviewed; management calls not found.</span></td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`operator/operator-organizations` and availability calls.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed calls.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed calls.</span></td>
+              <td><span class="implementation-status implementation-status--outside">Outside repo</span><span class="endpoint-evidence">Not reviewed here.</span></td>
+            </tr>
+            <tr>
+              <td>Pricing and day hire</td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">Zonal, vehicle, custom-loop pricing and day-hire stores.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed pricing service.</span></td>
+              <td><span class="implementation-status implementation-status--partial">Partial</span><span class="endpoint-evidence">Loop-pricing and organization store modules present.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed pricing calls.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed pricing calls.</span></td>
+              <td><span class="implementation-status implementation-status--outside">Outside repo</span><span class="endpoint-evidence">Not reviewed here.</span></td>
+            </tr>
+            <tr>
+              <td>Reports and dashboard statistics</td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">Reports and dashboard store modules.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed reports module.</span></td>
+              <td><span class="implementation-status implementation-status--implemented">Implemented</span><span class="endpoint-evidence">`operator/reports` and `operator/statistics`.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed reports module.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">Feature flags only in reviewed store modules.</span></td>
+              <td><span class="implementation-status implementation-status--outside">Outside repo</span><span class="endpoint-evidence">Not reviewed here.</span></td>
+            </tr>
+            <tr>
+              <td>Notifications</td>
+              <td><span class="implementation-status implementation-status--partial">Partial</span><span class="endpoint-evidence">Broadcast store modules present.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed notification service.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed notification module.</span></td>
+              <td><span class="implementation-status implementation-status--not-observed">Not observed</span><span class="endpoint-evidence">No reviewed notification repository.</span></td>
+              <td><span class="implementation-status implementation-status--partial">Partial</span><span class="endpoint-evidence">Notifications persist in local storage only.</span></td>
+              <td><span class="implementation-status implementation-status--outside">Outside repo</span><span class="endpoint-evidence">Not reviewed here.</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
     <section class="notes row g-3" aria-label="Review notes">
       <div class="col-12 col-lg-6">
